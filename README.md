@@ -18,10 +18,14 @@ This is a simple chatbot application that allows users to retrieve details about
 - Flask and Flask-CORS Python packages
 - Axios (included with React for API requests)
 
+## Screenshot
+- ![image](https://github.com/user-attachments/assets/4192dacf-d320-4b4c-85c4-84c4bf133dcb)
+
+
 ## Setup Instructions
 - Step 1: Clone the Repository
 ``` bash
-git clone [<repository-url>](https://github.com/Farhaan114/Chatbot-for-VC.git)
+git clone https://github.com/Farhaan114/Chatbot-for-VC.git
 cd Chatbot-for-VC
 ```
 - Step 2: Set Up the Backend (Flask)
