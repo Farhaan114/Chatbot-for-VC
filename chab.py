@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # Import CORS
 import json
+import random
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -29,21 +30,30 @@ def get_specific_data(company, request_type):
     elif request_type.lower() == "description":
         return company['data']['description']
     elif request_type.lower() == "reviews":
-        return '\n'.join([f"{review['username']}: {review['comment']}" for review in company['reviews']])
+        return random.choice([f"{review['username']}: {review['comment']}" for review in company['reviews']])
     elif request_type.lower() == "website":
         return company['data']['homepages']
     else:
         return "I didn't understand the request. Please ask for address, contact, description, reviews, or website."
 
-# Route for the main page and form submission
+# Route to send an introductory message on reload
+@app.route("/intro", methods=["GET"])
+def intro():
+    return jsonify({"response": "Welcome! I am your company information assistant. You can ask me for details like address, contact, description, reviews, or website of any company."})
+
+# Route for handling user queries
 @app.route("/", methods=["POST"])
 def home():
     result = ""
     if request.method == "POST":
-        user_query = request.json.get("user_query", "")  # Use JSON data
+        user_query = request.json.get("user_query", "").strip().lower()  # Use JSON data
+
+        # Check for greeting message "hi"
+        if user_query == "hi":
+            return jsonify({"response": "Hello! I am your assistant. Ask me about any company details like address, contact, description, or reviews."})
 
         # Extract company name and specific data requested
-        parts = user_query.lower().split(" of the company ")
+        parts = user_query.split(" of the company ")
         
         if len(parts) < 2:
             result = "Please provide the company name."
