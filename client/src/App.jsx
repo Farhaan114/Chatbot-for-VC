@@ -4,19 +4,26 @@ import "./App.css";
 
 function App() {
   const [userQuery, setUserQuery] = useState("");
-  const [result, setResult] = useState("");
+  const [chats, setChats] = useState([]);
   const [error, setError] = useState("");
 
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (userQuery.trim() === "") return;
+
+    // Add the user's message to the chat history
+    setChats((prevChats) => [...prevChats, { sender: "user", message: userQuery }]);
+    setUserQuery("");
+
     try {
       // Send POST request to the server
       const response = await axios.post("http://localhost:5000/", {
         user_query: userQuery,
       });
-      setResult(response.data.response);  // Assuming `response.data.response` contains the chatbot response
+      // Add the server response to the chat history
+      setChats((prevChats) => [...prevChats, { sender: "server", message: response.data.response }]);
       setError(""); // Clear any previous error
     } catch (err) {
       setError("An error occurred while fetching data. Please try again.");
@@ -27,28 +34,29 @@ function App() {
   return (
     <div className="container">
       <h2>Company Chatbot</h2>
-      <form onSubmit={handleSubmit}>
+
+      <div className="chat-box">
+        {chats.map((chat, index) => (
+          <div key={index} className={`chat-bubble ${chat.sender}`}>
+            <p>{chat.message}</p>
+          </div>
+        ))}
+      </div>
+
+      <form onSubmit={handleSubmit} className="input-form">
         <div className="form-group">
-          <label htmlFor="user_query">Enter your query:</label>
           <input
             type="text"
             id="user_query"
             value={userQuery}
             onChange={(e) => setUserQuery(e.target.value)}
             required
-            placeholder="Your query here..."
+            placeholder="Type your message..."
           />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit">Send</button>
       </form>
 
-      {result && (
-        <div className="result">
-          <h4>Result:</h4>
-          <p>{result}</p>
-        </div>
-      )}
-      
       {error && (
         <div className="error">
           <p>{error}</p>
